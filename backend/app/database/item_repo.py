@@ -32,3 +32,9 @@ def update_item(*, session: Session, existing_item: Item, item_update: ItemUpdat
     session.commit()
     session.refresh(existing_item)
     return existing_item
+
+
+def delete_item(*, session: Session, existing_item: Item) -> None:
+    session.delete(item)
+    session.commit()
+    return
