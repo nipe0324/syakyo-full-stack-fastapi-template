@@ -104,3 +104,11 @@ def update_password_me(
     session.addp(current_user)
     session.commit()
     return Message(message="Password updated successfully")
+
+
+@router.get("/me", response_model=UserPublic)
+def read_user_me(current_user: CurrentUser) -> Any:
+    """
+    Get current user.
+    """
+    return current_user
