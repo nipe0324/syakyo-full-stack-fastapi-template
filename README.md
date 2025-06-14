@@ -1,0 +1,1 @@
+# syakyo-full-stack-fastapi-template
