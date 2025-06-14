@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import func, select
 
 from app.api.deps import CurrentUser, SessionDep
-from app.database.item import Item
+from app.database.item_repo import Item
 from app.models import ItemPublic, ItemsPublic
 
 router = APIRouter(prefix="/items", tags=["items"])
@@ -38,7 +38,7 @@ def read_item(session: SessionDep, current_user: CurrentUser, id: uuid.UUID) -> 
     """
     Get item by ID.
     """
-    item = item.get_by_id(session, id)
+    item = item_repo.get_by_id(session, id)
     if not item:
         raise HTTPException(status_code=404, detail="Item not found")
     if not current_user.is_superuser and (item.owner_id != current_user.id):

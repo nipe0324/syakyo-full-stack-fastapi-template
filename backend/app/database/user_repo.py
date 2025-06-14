@@ -16,11 +16,11 @@ class User(SQLModel, table=True):
     is_superuser: bool = False
 
 
-def get_user_by_id(*, session: Session, user_id: uuid.UUID) -> User | None:
+def get_by_id(*, session: Session, user_id: uuid.UUID) -> User | None:
     return session.get(User, user_id)
 
 
-def get_user_by_email(*, session: Session, email: str) -> User | None:
+def get_by_email(*, session: Session, email: str) -> User | None:
     statement = select(User).where(User.email == email)
     session_user = session.exec(statement).first()
     return session_user

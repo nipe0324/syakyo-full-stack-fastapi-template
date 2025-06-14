@@ -10,7 +10,7 @@ from app.api.deps import (
 )
 from app.core.config import settings
 from app.core.security import get_password_hash, verify_password
-from app.database import user
+from app.database import user_repo
 from app.models import (
     Message,
     UserPublic,
@@ -53,14 +53,14 @@ def create_user(*, session: SessionDep, user_in: UserCreate) -> Any:
     """
     Create new user.
     """
-    user = crud.get_user_by_email(session=session, email=user_in.email)
+    user = user.get_by_email(session=session, email=user_in.email)
     if user:
         raise HTTPException(
             status_code=400,
             detail="The user with this email already exists in the system.",
         )
 
-    user = crud.create_user(session=sessionn, user_create=user_in)
+    user = user.create_user(session=sessionn, user_create=user_in)
     # if settings.emails_enabled and user_in.email:
     #     send_email
 
@@ -76,7 +76,7 @@ def update_user_me(
     """
 
     if user_in.email:
-        existing_user = crud.get_user_by_email(session=session, email=user_in.email)
+        existing_user = user.get_by_email(session=session, email=user_in.email)
         if existing_user and existing.id != current_user.id:
             raise HTTPException(
                 status_code=409, detail="User with this email alreaady exists"
@@ -122,7 +122,7 @@ def delete_user_me(session: SessionDep, current_user: CurrentUser) -> Any:
     """
     if current_user.is_superuser:
         raise HTTPException(status_code=403, detail="Super users are not allowed to delete themselves")
-    crud.delete_user(session=session, user_id=current_user.id)
+    user.delete_user(session=session, user_id=current_user.id)
     return Message(message="User deleted successfully")
 
 
@@ -131,14 +131,14 @@ def register_user(session: SessionDep, user_in: UserRegister) -> Any:
     """
     Create new user without the need to be logged in.
     """
-    user = crud.get_user_by_email(session=session, email=user_in.email)
+    user = user.get_by_email(session=session, email=user_in.email)
     if user:
         raise HTTPException(
             status_code=400,
             detail="The user with this email already exists in the system",
         )
     user_create = UserCreate.model_validate(user_in)
-    user = crud.create_user(session=session, user_create=user_create)
+    user = user.create_user(session=session, user_create=user_create)
     return user
 
 
@@ -149,7 +149,7 @@ def read_user_by_id(
     """
     Get a specific user by id.
     """
-    user = crud.get_user_by_id(user_id)
+    user = user.get_by_id(user_id)
     if user == current_user:
         return user
     if not current_user.is_superuser:
@@ -172,20 +172,20 @@ def update_user(
     Update a user.
     """
 
-    db_user = crud.get_user_by_id(user_id)
+    db_user = user.get_by_id(user_id)
     if not db_user:
         raise HTTPException(
             status_code=404,
             detail="The user with this id does not exist in the system",
         )
     if user_in.email:
-        existing_user = crud.get_user_by_email(session=session, email=user_in.email)
+        existing_user = user.get_by_email(session=session, email=user_in.email)
         if existing_user and existing_user.id != user_id:
             raise HTTPException(
                 status_code=409, detail="User with this email already exists"
             )
 
-    db_user = crud.update_user(session=session, db_user=db_user, user_in=user_in)
+    db_user = user.update_user(session=session, db_user=db_user, user_in=user_in)
     return db_user
 
 
@@ -200,11 +200,11 @@ def delete_user(
     """
     Delete a user.
     """
-    user = crud.get_user_by_id(session=session, user_id=user_id)
+    user = user.get_by_id(session=session, user_id=user_id)
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     if user == current_user:
         raise HTTPException(status_code=403, detail="Super users are not allowed to delete themselves")
 
-    crud.delete_user(session=session, user_id=user_id)
+    user.delete_user(session=session, user_id=user_id)
     return Message(message="User deleted successfully")

@@ -11,7 +11,7 @@ from sqlmodel import Session
 from app.core import security
 from app.core.config import settings
 from app.core.db import engine
-from app.database.user import User
+from app.database.user_repo import User
 from app.models import TokenPayload
 
 
