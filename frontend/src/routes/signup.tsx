@@ -47,7 +47,6 @@ function Signup() {
   })
 
   const onSubmit: SubmitHandler<UserRegisterForm> = (data) => {
-    console.log(data)
     signUpMutation.mutate(data)
   }
 
@@ -64,7 +63,14 @@ function Signup() {
           gap={4}
           centerContent
         >
-          <Flex alignItems="center" justifyContent="center" w="100%" fontSize="2xl" fontWeight="bold" mb={4}>
+          <Flex
+            alignItems="center"
+            justifyContent="center"
+            w="100%"
+            fontSize="2xl"
+            fontWeight="bold"
+            mb={4}
+          >
             Syakyo
           </Flex>
           <Field

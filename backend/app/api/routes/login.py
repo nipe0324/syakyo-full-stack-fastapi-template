@@ -4,10 +4,12 @@ from typing import Annotated, Any
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
 
+from app.core.security import create_access_token
 from app.api.deps import CurrentUser, SessionDep
 from app.core.config import settings
 from app.model.user import UserPublic
 from app.model.token import Token
+from app.database import user_repo
 
 router = APIRouter(tags=["login"])
 
@@ -18,7 +20,7 @@ def login_access_token(
     """
     OAuth2 compatible token login, get an access token for future requests
     """
-    user = crud.authenticate(
+    user = user_repo.authenticate(
         session=session, email=form_data.username, password=form_data.password
     )
     if not user:
@@ -27,7 +29,7 @@ def login_access_token(
         raise HTTPException(status_code=400, detail="Inactive user")
     access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     return Token(
-        access_token=security.create_access_token(
+        access_token=create_access_token(
             user.id, expires_delta=access_token_expires
         )
     )

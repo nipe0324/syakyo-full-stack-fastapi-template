@@ -7,7 +7,7 @@ import {
 import { type SubmitHandler, useForm } from "react-hook-form"
 import { FiLock, FiMail } from "react-icons/fi"
 
-import type { Body_login_access_token_api_v1_login_access_token_post as LoginForm } from "@/client"
+import type { Body_login_access_token as LoginForm } from "@/client"
 import { Button } from "@/components/ui/button"
 import { Field } from "@/components/ui/field"
 import { InputGroup } from "@/components/ui/input-group"
@@ -53,10 +53,24 @@ export default function Login() {
 
   return (
     <>
-      <Container as="form" onSubmit={handleSubmit(onSubmit)}
-        h="100vh" maxW="sm" alignItems="stretch" justifyContent="center" gap={4} centerContent
+      <Container
+        as="form"
+        onSubmit={handleSubmit(onSubmit)}
+        h="100vh"
+        maxW="sm"
+        alignItems="stretch"
+        justifyContent="center"
+        gap={4}
+        centerContent
       >
-        <Flex alignItems="center" justifyContent="center" w="100%" fontSize="2xl" fontWeight="bold" mb={4}>
+        <Flex
+          alignItems="center"
+          justifyContent="center"
+          w="100%"
+          fontSize="2xl"
+          fontWeight="bold"
+          mb={4}
+        >
           Syakyo
         </Flex>
         <Field

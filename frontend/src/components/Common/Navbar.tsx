@@ -18,9 +18,7 @@ function Navbar() {
       top={0}
       p={4}
     >
-      <Link to="/">
-        Syakyo
-      </Link>
+      <Link to="/">Syakyo</Link>
       <Flex gap={2} alignItems="center">
         Menu
         {/* <UserMenu /> */}

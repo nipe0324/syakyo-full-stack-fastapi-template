@@ -10,7 +10,7 @@ class Item(SQLModel, table=True):
     title: str = Field(min_length=1, max_length=255)
     descrption: str | None = Field(default=None, max_length=255)
     owner_id: uuid.UUID = Field(foreign_key="user.id", nullable=False, ondelete="CASCADE")
-    owner: User | None = Relationship(back_populates="items")
+    # owner: User | None = Relationship(back_populates="items")
 
 
 def get_by_id(*, session: Session, item_id: uuid.UUID) -> Item | None:
