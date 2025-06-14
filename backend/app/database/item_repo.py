@@ -8,13 +8,13 @@ from app.model.item import ItemCreate, ItemUpdate
 class Item(SQLModel, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     title: str = Field(min_length=1, max_length=255)
-    descrption: str | None = Field(default=None, max_length=255)
+    description: str | None = Field(default=None, max_length=255)
     owner_id: uuid.UUID = Field(foreign_key="user.id", nullable=False, ondelete="CASCADE")
     # owner: User | None = Relationship(back_populates="items")
 
 
-def get_by_id(*, session: Session, item_id: uuid.UUID) -> Item | None:
-    return session.get(Item, item_id)
+def get_by_id(*, session: Session, id: uuid.UUID) -> Item | None:
+    return session.get(Item, id)
 
 
 def create_item(*, session: Session, item_create: ItemCreate, owner_id: int) -> Item:
@@ -35,6 +35,6 @@ def update_item(*, session: Session, existing_item: Item, item_update: ItemUpdat
 
 
 def delete_item(*, session: Session, existing_item: Item) -> None:
-    session.delete(item)
+    session.delete(existing_item)
     session.commit()
     return

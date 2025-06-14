@@ -24,7 +24,7 @@ def upgrade() -> None:
     op.create_table('item',
     sa.Column('id', sa.Uuid(), nullable=False),
     sa.Column('title', sa.String(length=255), nullable=False),
-    sa.Column('descrption', sa.String(length=255), nullable=True),
+    sa.Column('description', sa.String(length=255), nullable=True),
     sa.Column('owner_id', sa.Uuid(), nullable=False),
     sa.ForeignKeyConstraint(['owner_id'], ['user.id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id')

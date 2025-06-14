@@ -5,6 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import func, select
 
 from app.api.deps import CurrentUser, SessionDep
+from app.database import item_repo
 from app.database.item_repo import Item
 from app.model.item import ItemPublic, ItemsPublic, ItemCreate, ItemUpdate
 from app.model.message import Message
@@ -67,12 +68,12 @@ def update_item(
     """
     Update an item.
     """
-    item = item_repo.get_by_id(id)
+    item = item_repo.get_by_id(session=session, id=id)
     if not item:
         raise HTTPException(status_code=404, detail="Item not found")
     if not current_user.is_superuser and (item.owner_id != current_user.id):
         raise HTTPException(status_code=400, detail="Not enough permissions")
-    updated_item = item_repo.update_item(item, item_in)
+    updated_item = item_repo.update_item(session=session, existing_item=item, item_update=item_in)
     return updated_item
 
 
@@ -83,10 +84,10 @@ def delete_item(
     """
     Delete an item.
     """
-    item = item_repo.get_by_id(id)
+    item = item_repo.get_by_id(session=session, id=id)
     if not item:
         raise HTTPException(status_code=404, detail="Item not found")
     if not current_user.is_superuser and (item.owner_id != current_user.id):
         raise HTTPException(status_code=400, detail="Not enough permissions")
-    item_repo.delete_item(item)
+    item_repo.delete_item(session=session, existing_item=item)
     return Message(message="Item deleted successfully")
