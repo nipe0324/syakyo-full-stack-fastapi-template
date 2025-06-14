@@ -27,6 +27,11 @@ class UserPublic(UserBase):
     id: uuid.UUID
 
 
+class UsersPublic(SQLModel):
+    data: list[UserPublic]
+    count: int
+
+
 # JSON payload containing access token
 class Token(SQLModel):
     access_token: str
