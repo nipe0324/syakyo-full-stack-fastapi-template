@@ -56,6 +56,9 @@ class ItemBase(SQLModel):
     descrption: str | None = Field(default=None, max_length=255)
 
 
+class ItemCreate(ItemBase):
+    pass
+
 
 class ItemPublic(ItemBase):
     id: uuid.UUID

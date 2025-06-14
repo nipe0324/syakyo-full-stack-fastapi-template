@@ -6,7 +6,7 @@ from sqlmodel import func, select
 
 from app.api.deps import CurrentUser, SessionDep
 from app.database.item_repo import Item
-from app.models import ItemPublic, ItemsPublic
+from app.models import ItemPublic, ItemsPublic, ItemCreate
 
 router = APIRouter(prefix="/items", tags=["items"])
 
@@ -34,7 +34,9 @@ def read_items(
 
 
 @router.get("/{id}", response_model=ItemPublic)
-def read_item(session: SessionDep, current_user: CurrentUser, id: uuid.UUID) -> ItemPublic:
+def read_item(
+    session: SessionDep, current_user: CurrentUser, id: uuid.UUID
+) -> ItemPublic:
     """
     Get item by ID.
     """
@@ -43,4 +45,15 @@ def read_item(session: SessionDep, current_user: CurrentUser, id: uuid.UUID) -> 
         raise HTTPException(status_code=404, detail="Item not found")
     if not current_user.is_superuser and (item.owner_id != current_user.id):
         raise HTTPException(status_code=400, detail="Not engouh permissions")
+    return item
+
+
+@router.post("/", response_model=ItemPublic)
+def create_item(
+    *, session: SessionDep, current_user: CurrentUser, item_in: ItemCreate
+) -> ItemPublic:
+    """
+    Create new item.
+    """
+    item = item_repo.create_item(session=session, item_create=item_in, owner_id=current_user.id)
     return item
