@@ -1,4 +1,4 @@
-import { Container, Image, Input, Text } from "@chakra-ui/react"
+import { Container, Flex, Input, Text } from "@chakra-ui/react"
 import {
   Link as RouterLink,
   createFileRoute,
@@ -56,7 +56,9 @@ export default function Login() {
       <Container as="form" onSubmit={handleSubmit(onSubmit)}
         h="100vh" maxW="sm" alignItems="stretch" justifyContent="center" gap={4} centerContent
       >
-        Syakyo
+        <Flex alignItems="center" justifyContent="center" w="100%" fontSize="2xl" fontWeight="bold" mb={4}>
+          Syakyo
+        </Flex>
         <Field
           invalid={!!errors.username}
           errorText={errors.username?.message || !!error}

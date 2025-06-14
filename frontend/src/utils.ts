@@ -26,6 +26,24 @@ export const passwordRules = (isRequired = true) => {
   return rules
 }
 
+export const confirmPasswordRules = (
+  getValues: () => any,
+  isRequired = true,
+) => {
+  const rules: any = {
+    validate: (value: string) => {
+      const password = getValues().password || getValues().new_password
+      return value === password ? true : "The passwords do not match"
+    },
+  }
+
+  if (isRequired) {
+    rules.required = "Password confirmation is required"
+  }
+
+  return rules
+}
+
 export const handleError = (err: ApiError) => {
   const { showErrorToast } = useCustomToast()
   const errDetail = (err.body as any)?.detail
