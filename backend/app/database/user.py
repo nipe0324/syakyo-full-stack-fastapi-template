@@ -1,10 +1,29 @@
 import uuid
-from typing import Any
 
-from sqlmodel import Session, select
+from pydantic import EmailStr
+from sqlmodel import Field, SQLModel, Session, select
 
 from app.core.security import get_password_hash
-from app.models import User, UserCreate, UserUpdate
+from app.models import UserCreate, UserUpdate
+
+
+class User(SQLModel, table=True):
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    email: EmailStr = Field(unique=True, index=True, max_length=255)
+    hashed_password: str
+    full_name: str | None = Field(default=None, max_length=255)
+    is_active: bool = True
+    is_superuser: bool = False
+
+
+def get_user_by_id(*, session: Session, user_id: uuid.UUID) -> User | None:
+    return session.get(User, user_id)
+
+
+def get_user_by_email(*, session: Session, email: str) -> User | None:
+    statement = select(User).where(User.email == email)
+    session_user = session.exec(statement).first()
+    return session_user
 
 
 def create_user(*, session: Session, user_create: UserCreate) -> User:
@@ -36,13 +55,3 @@ def delete_user(*, session: Session, user_id: uuid.UUID) -> None:
     statement = select(User).where(User.id == user_id)
     session.delete(user)
     session.commit()
-
-
-def get_user_by_id(*, session: Session, user_id: uuid.UUID) -> User | None:
-    return session.get(User, user_id)
-
-
-def get_user_by_email(*, session: Session, email: str) -> User | None:
-    statement = select(User).where(User.email == email)
-    session_user = session.exec(statement).first()
-    return session_user

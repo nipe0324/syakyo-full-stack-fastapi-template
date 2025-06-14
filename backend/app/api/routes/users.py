@@ -3,7 +3,6 @@ from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException
 
-from app import crud
 from app.api.deps import (
     CurrentUser,
     SessionDep,
@@ -11,9 +10,9 @@ from app.api.deps import (
 )
 from app.core.config import settings
 from app.core.security import get_password_hash, verify_password
+from app.database import user
 from app.models import (
     Message,
-    User,
     UserPublic,
     UsersPublic,
     UserCreate,
