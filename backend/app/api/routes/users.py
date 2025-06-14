@@ -123,8 +123,7 @@ def delete_user_me(session: SessionDep, current_user: CurrentUser) -> Any:
     """
     if current_user.is_superuser:
         raise HTTPException(status_code=403, detail="Super users are not allowed to delete themselves")
-    session.delete(current_user)
-    session.commit()
+    crud.delete_user(session=session, user_id=current_user.id)
     return Message(message="User deleted successfully")
 
 
