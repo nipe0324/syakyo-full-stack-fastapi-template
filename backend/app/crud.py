@@ -18,7 +18,7 @@ def create_user(*, session: Session, user_create: UserCreate) -> User:
     return db_obj
 
 
-def update_user(*, session: Session, db_user: User, user_in: UserUpdate) -> Any:
+def update_user(*, session: Session, db_user: User, user_in: UserUpdate) -> User:
     user_data = user_in.model_dump(exclude_unset=True)
     extra_data = {}
     if "password" in user_data:
@@ -30,6 +30,12 @@ def update_user(*, session: Session, db_user: User, user_in: UserUpdate) -> Any:
     session.commit()
     session.refresh(db_user)
     return db_user
+
+
+def delete_user(*, session: Session, user_id: uuid.UUID) -> None:
+    statement = select(User).where(User.id == user_id)
+    session.delete(user)
+    session.commit()
 
 
 def get_user_by_email(*, session: Session, email: str) -> User | None:
