@@ -1,7 +1,6 @@
 from fastapi import APIRouter
 
-api_router = APIRouter()
+from app.api.routes import login
 
-@api_router.get("/")
-def read_root():
-    return {"message": "Hello, World!"}
+api_router = APIRouter()
+api_router.include_router(login.router)
