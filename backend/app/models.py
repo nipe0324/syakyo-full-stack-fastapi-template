@@ -1,7 +1,7 @@
 import uuid
 
 from pydantic import EmailStr
-from sqlmodel import Field, SQLModel
+from sqlmodel import Field, SQLModel, Relationship
 
 # Shared properties
 class UserBase(SQLModel):
@@ -51,6 +51,28 @@ class UserPublic(UserBase):
 
 class UsersPublic(SQLModel):
     data: list[UserPublic]
+    count: int
+
+
+# Shared properties
+class ItemBase(SQLModel):
+    title: str = Field(min_length=1, max_length=255)
+    descrption: str | None = Field(default=None, max_length=255)
+
+
+class Item(ItemBase, table=True):
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    owner_id: uuid.UUID = Field(foreign_key="user.id", nullable=False, ondelete="CASCADE")
+    owner: User | None = Relationship(back_populates="items")
+
+
+class ItemPublic(ItemBase):
+    id: uuid.UUID
+    owner_id: uuid.UUID
+
+
+class ItemsPublic(SQLModel):
+    data: list[ItemPublic]
     count: int
 
 
