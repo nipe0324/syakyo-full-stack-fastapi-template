@@ -10,12 +10,15 @@ from app.api.deps import (
     get_current_active_superuser,
 )
 from app.core.config import settings
+from app.core.security import get_password_hash, verify_password
 from app.models import (
+    Message,
     User,
     UserPublic,
     UsersPublic,
     UserCreate,
-    UserUpdateMe
+    UserUpdateMe,
+    UpdatePassword
 )
 
 router = APIRouter(prefix="/users", tags=["users"])
@@ -64,7 +67,9 @@ def create_user(*, session: SessionDep, user_in: UserCreate) -> Any:
 
 
 @router.patch("/me", response_model=UserPublic)
-def update_user_me(*, session: SessionDep, user_in: UserUpdateMe, current_uer: CurrentUser) -> Any:
+def update_user_me(
+    *, session: SessionDep, user_in: UserUpdateMe, current_uer: CurrentUser
+) -> Any:
     """
     Update own user.
     """
@@ -81,3 +86,21 @@ def update_user_me(*, session: SessionDep, user_in: UserUpdateMe, current_uer: C
     session.commit()
     session.refresh(current_user)
     return current_user
+
+
+@router.patch("/me/password", response_model=Message)
+def update_password_me(
+    *, session: SessionDep, body: UpdatePassword, current_user: CurrentUser
+) -> Any:
+    """
+    Update own password.
+    """
+    if not verify_password(body.current_password, current_user.hashed_password):
+        raise HTTPException(status_code=400, detail="Incorrect password")
+    if body.current_password == body.new_password:
+        raise HTTPException(status_code=400, detail="New password cannot be the same")
+    hashed_password = get_password_hash(body.new_password)
+    current_user.hashed_password = hashed_password
+    session.addp(current_user)
+    session.commit()
+    return Message(message="Password updated successfully")
