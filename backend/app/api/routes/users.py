@@ -151,7 +151,7 @@ def read_user_by_id(
     """
     Get a specific user by id.
     """
-    user = session.get(User, user_id)
+    user = crud.get_user_by_id(user_id)
     if user == current_user:
         return user
     if not current_user.is_superuser:
@@ -174,7 +174,7 @@ def update_user(
     Update a user.
     """
 
-    db_user = session.get(User, user_id)
+    db_user = crud.get_user_by_id(user_id)
     if not db_user:
         raise HTTPException(
             status_code=404,
@@ -202,7 +202,7 @@ def delete_user(
     """
     Delete a user.
     """
-    user = session.get(User, user_id)
+    user = crud.get_user_by_id(session=session, user_id=user_id)
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     if user == current_user:

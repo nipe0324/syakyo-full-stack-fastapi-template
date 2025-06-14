@@ -38,6 +38,10 @@ def delete_user(*, session: Session, user_id: uuid.UUID) -> None:
     session.commit()
 
 
+def get_user_by_id(*, session: Session, user_id: uuid.UUID) -> User | None:
+    return session.get(User, user_id)
+
+
 def get_user_by_email(*, session: Session, email: str) -> User | None:
     statement = select(User).where(User.email == email)
     session_user = session.exec(statement).first()
