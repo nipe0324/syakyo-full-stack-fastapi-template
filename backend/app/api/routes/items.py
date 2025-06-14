@@ -6,7 +6,7 @@ from sqlmodel import func, select
 
 from app.api.deps import CurrentUser, SessionDep
 from app.database.item_repo import Item
-from app.models import ItemPublic, ItemsPublic, ItemCreate
+from app.models import ItemPublic, ItemsPublic, ItemCreate, ItemUpdate
 
 router = APIRouter(prefix="/items", tags=["items"])
 
@@ -55,5 +55,21 @@ def create_item(
     """
     Create new item.
     """
-    item = item_repo.create_item(session=session, item_create=item_in, owner_id=current_user.id)
-    return item
+    new_item = item_repo.create_item(session=session, item_create=item_in, owner_id=current_user.id)
+    return new_item
+
+
+@router.put("/{id}", response_model=ItemPublic)
+def update_item(
+    *, session: SessionDep, current_user: CurrentUser, id: uuid.UUID, item_in: ItemUpdate
+) -> ItemPublic:
+    """
+    Update an item.
+    """
+    item = item_repo.get_by_id(id)
+    if not item:
+        raise HTTPException(status_code=404, detail="Item not found")
+    if not current_user.is_superuser and (item.owner_id != current_user.id):
+        raise HTTPException(status_code=400, detail="Not enough permissions")
+    updated_item = item_repo.update_item(item, item_in)
+    return updated_item

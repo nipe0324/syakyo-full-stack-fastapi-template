@@ -3,7 +3,7 @@ import uuid
 from sqlmodel import Field, SQLModel, Session, Relationship
 
 from app.database.user_repo import User
-from app.models import ItemCreate
+from app.models import ItemCreate, ItemUpdate
 
 class Item(SQLModel, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
@@ -14,12 +14,21 @@ class Item(SQLModel, table=True):
 
 
 def get_by_id(*, session: Session, item_id: uuid.UUID) -> Item | None:
-    return session.get(User, item_id)
+    return session.get(Item, item_id)
 
 
 def create_item(*, session: Session, item_create: ItemCreate, owner_id: int) -> Item:
-    item = Item.model_validate(item_create, update={"owner_id": owner_id})
-    session.add(item)
+    new_item = Item.model_validate(item_create, update={"owner_id": owner_id})
+    session.add(new_item)
     session.commit()
-    session.refresh(item)
-    return item
+    session.refresh(new_item)
+    return new_item
+
+
+def update_item(*, session: Session, existing_item: Item, item_update: ItemUpdate) -> Item:
+    update_dict = item_update.model_dump(exclude_unset=True)
+    existing_item.sqlmodel_update(update_dict)
+    session.add(existing_item)
+    session.commit()
+    session.refresh(existing_item)
+    return existing_item
