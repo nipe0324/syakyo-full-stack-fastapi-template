@@ -3,7 +3,7 @@ from sqlmodel import Session, create_engine, select
 from app.database import user_repo
 from app.database.user_repo import User
 from app.core.config import settings
-from app.models import UserCreate
+from app.model.user import UserCreate
 
 
 

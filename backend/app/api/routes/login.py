@@ -6,7 +6,8 @@ from fastapi.security import OAuth2PasswordRequestForm
 
 from app.api.deps import CurrentUser, SessionDep
 from app.core.config import settings
-from app.models import Token, UserPublic
+from app.model.user import UserPublic
+from app.model.token import Token
 
 router = APIRouter(tags=["login"])
 

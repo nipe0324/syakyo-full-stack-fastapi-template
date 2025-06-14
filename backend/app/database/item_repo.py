@@ -3,7 +3,7 @@ import uuid
 from sqlmodel import Field, SQLModel, Session, Relationship
 
 from app.database.user_repo import User
-from app.models import ItemCreate, ItemUpdate
+from app.model.item import ItemCreate, ItemUpdate
 
 class Item(SQLModel, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)

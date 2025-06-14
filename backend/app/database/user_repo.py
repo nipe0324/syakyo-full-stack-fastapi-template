@@ -4,7 +4,7 @@ from pydantic import EmailStr
 from sqlmodel import Field, SQLModel, Session, select
 
 from app.core.security import get_password_hash
-from app.models import UserCreate, UserUpdate
+from app.model.user import UserCreate, UserUpdate
 
 
 class User(SQLModel, table=True):

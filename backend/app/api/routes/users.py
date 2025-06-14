@@ -11,8 +11,8 @@ from app.api.deps import (
 from app.core.config import settings
 from app.core.security import get_password_hash, verify_password
 from app.database import user_repo
-from app.models import (
-    Message,
+from app.model.message import Message
+from app.model.user import (
     UserPublic,
     UsersPublic,
     UserCreate,

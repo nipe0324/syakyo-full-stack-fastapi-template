@@ -6,7 +6,8 @@ from sqlmodel import func, select
 
 from app.api.deps import CurrentUser, SessionDep
 from app.database.item_repo import Item
-from app.models import ItemPublic, ItemsPublic, ItemCreate, ItemUpdate, Message
+from app.model.item import ItemPublic, ItemsPublic, ItemCreate, ItemUpdate
+from app.model.message import Message
 
 router = APIRouter(prefix="/items", tags=["items"])
 

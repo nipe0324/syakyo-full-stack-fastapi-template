@@ -12,7 +12,7 @@ from app.core import security
 from app.core.config import settings
 from app.core.db import engine
 from app.database.user_repo import User
-from app.models import TokenPayload
+from app.model.token import TokenPayload
 
 
 reusable_oauth2 = OAuth2PasswordBearer(
