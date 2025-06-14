@@ -18,8 +18,9 @@ from app.models import (
     UsersPublic,
     UserCreate,
     UserRegister,
+    UserUpdate,
     UserUpdateMe,
-    UpdatePassword
+    UserUpdatePasswordMe
 )
 
 router = APIRouter(prefix="/users", tags=["users"])
@@ -91,7 +92,7 @@ def update_user_me(
 
 @router.patch("/me/password", response_model=Message)
 def update_password_me(
-    *, session: SessionDep, body: UpdatePassword, current_user: CurrentUser
+    *, session: SessionDep, body: UserUpdatePasswordMe, current_user: CurrentUser
 ) -> Any:
     """
     Update own password.
@@ -159,3 +160,32 @@ def read_user_by_id(
             detail="The user doesn't have enough privileges",
         )
     return user
+
+
+@router.patch(
+    "/{user_id}",
+    dependencies=[Depends(get_current_active_superuser)],
+    response_model=UserPublic,
+)
+def update_user(
+    *, session: SessionDep, user_id: uuid.UUID, user_in: UserUpdate,
+) -> Any:
+    """
+    Update a user.
+    """
+
+    db_user = session.get(User, user_id)
+    if not db_user:
+        raise HTTPException(
+            status_code=404,
+            detail="The user with this id does not exist in the system",
+        )
+    if user_in.email:
+        existing_user = crud.get_user_by_email(session=session, email=user_in.email)
+        if existing_user and existing_user.id != user_id:
+            raise HTTPException(
+                status_code=409, detail="User with this email already exists"
+            )
+
+    db_user = crud.update_user(session=session, db_user=db_user, user_in=user_in)
+    return db_user
