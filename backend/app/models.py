@@ -22,7 +22,17 @@ class User(UserBase, table=True):
     hashed_password: str
 
 
+# Properties to return via API, id is always required
+class UserPublic(UserBase):
+    id: uuid.UUID
+
+
 # JSON payload containing access token
 class Token(SQLModel):
     access_token: str
     token_type: str = "bearer"
+
+
+# Contents of JWT Token
+class TokenPayload(SQLModel):
+    sub: str | None = None
