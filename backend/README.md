@@ -27,3 +27,5 @@ uvicorn app.main:app --reload
 curl http://localhost:8000/api/v1/
 {"message":"Hello, World!"}%
 ```
+
+## Migrations
