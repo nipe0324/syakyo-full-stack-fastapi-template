@@ -58,8 +58,15 @@ def update_user(*, session: Session, db_user: User, user_in: UserUpdate) -> User
     session.refresh(db_user)
     return db_user
 
+def update_password(*, session: Session, user: User, new_password: str) -> None:
+    hashed_password = get_password_hash(new_password)
+    user.hashed_password = hashed_password
+    session.add(user)
+    session.commit()
+    return
 
-def delete_user(*, session: Session, user_id: uuid.UUID) -> None:
-    statement = select(User).where(User.id == user_id)
+
+def delete_user(*, session: Session, user: User) -> None:
     session.delete(user)
     session.commit()
+    return

@@ -69,15 +69,15 @@ def create_user(*, session: SessionDep, user_in: UserCreate) -> Any:
 
 @router.patch("/me", response_model=UserPublic)
 def update_user_me(
-    *, session: SessionDep, user_in: UserUpdateMe, current_uer: CurrentUser
+    *, session: SessionDep, user_in: UserUpdateMe, current_user: CurrentUser
 ) -> Any:
     """
     Update own user.
     """
 
     if user_in.email:
-        existing_user = user.get_by_email(session=session, email=user_in.email)
-        if existing_user and existing.id != current_user.id:
+        existing_user = user_repo.get_by_email(session=session, email=user_in.email)
+        if existing_user and existing_user.id != current_user.id:
             raise HTTPException(
                 status_code=409, detail="User with this email alreaady exists"
             )
@@ -100,10 +100,8 @@ def update_password_me(
         raise HTTPException(status_code=400, detail="Incorrect password")
     if body.current_password == body.new_password:
         raise HTTPException(status_code=400, detail="New password cannot be the same")
-    hashed_password = get_password_hash(body.new_password)
-    current_user.hashed_password = hashed_password
-    session.addp(current_user)
-    session.commit()
+
+    user_repo.update_password(session=session, user=current_user, new_password=body.new_password)
     return Message(message="Password updated successfully")
 
 
@@ -122,7 +120,7 @@ def delete_user_me(session: SessionDep, current_user: CurrentUser) -> Any:
     """
     if current_user.is_superuser:
         raise HTTPException(status_code=403, detail="Super users are not allowed to delete themselves")
-    user.delete_user(session=session, user_id=current_user.id)
+    user_repo.delete_user(session=session, user=current_user)
     return Message(message="User deleted successfully")
 
 
